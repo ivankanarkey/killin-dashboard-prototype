@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Abacus</title>
+<style>
+  :root { color-scheme: dark;
+    --bg: #020a14;
+    --bg-glow: #0a2744;
+    --panel: #061a33;
+    --panel-lt: #0b2d52;
+    --blue: #1e88e5;
+    --blue-text: #5fb3ff;
+    --ink: #ffffff;
+    --ink-dim: #bcd4f0;
+    --wire: #1e3a5c;
+    --back: #ffe600;
+    /* status colours: one meaning each */
+    --s-notstarted: #d400ff;
+    --s-underway: #ff8c00;
+    --s-completed: #00e5d4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    background-image: radial-gradient(ellipse 90% 60% at 50% 0%, var(--bg-glow), var(--bg) 70%);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 18px 14px 40px;
+    min-height: 100vh;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  h1 {
+    font-size: 26px;
+    color: var(--blue-text);
+    text-shadow: 0 0 12px rgba(30,136,229,.9);
+  }
+
+  h1 { margin-bottom: 16px; }
+
+  /* Nav bar: yellow Back + blue breadcrumbs */
+  .nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .nav[hidden] { display: none; }
+  .back-btn {
+    min-height: 44px;
+    padding: 0 18px;
+    background: var(--back);
+    color: #000;
+    font-weight: 800;
+    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--back);
+  }
+  .crumb {
+    min-height: 44px;
+    padding: 0 12px;
+    background: var(--panel);
+    border: 2px solid var(--blue);
+    color: var(--blue-text);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .crumb.current { background: var(--panel-lt); color: var(--ink); cursor: default; }
+  .crumb-sep { color: var(--blue); font-weight: 700; }
+
+  /* Board */
+  .board-title {
+    font-size: 21px;
+    color: var(--blue-text);
+    text-shadow: 0 0 10px rgba(30,136,229,.7);
+    margin-bottom: 12px;
+  }
+
+  .rows { display: grid; gap: 10px; }
+
+  /* One bead = one card. Colour lives only in the left bar, status word and bead. */
+  .row {
+    position: relative;
+    background: var(--panel);
+    border: 2px solid var(--blue);
+    border-radius: 12px;
+    padding: 12px 14px 8px 20px;
+    overflow: hidden;
+  }
+  .row::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: var(--status, transparent);
+  }
+
+  .row-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .bead-name { font-size: 17px; font-weight: 700; line-height: 1.3; }
+  .status-word {
+    display: block;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: var(--status, var(--ink-dim));
+    margin-top: 2px;
+  }
+
+  .open-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 14px;
+    background: var(--panel-lt);
+    border: 2px solid var(--blue);
+    color: var(--blue-text);
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* Wire */
+  .wire-row { padding: 22px 16px 4px; }
+  .wire {
+    position: relative;
+    height: 6px;
+    background: var(--wire);
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .wire::after {
+    /* larger invisible tap area */
+    content: "";
+    position: absolute;
+    left: -16px; right: -16px; top: -18px; bottom: -18px;
+  }
+  .wire-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--ink-dim);
+    margin-top: 14px;
+  }
+
+  .bead {
+    position: absolute;
+    top: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--status);
+    box-shadow: 0 0 10px var(--status), 0 0 22px var(--status);
+    transition: left 0.3s cubic-bezier(.34,1.4,.4,1);
+    cursor: grab;
+    touch-action: none;
+    z-index: 2;
+  }
+  .bead.dragging { transition: none; cursor: grabbing; }
+  .bead.at-done { animation: chime 0.6s ease-out; }
+  @keyframes chime {
+    0% { box-shadow: 0 0 0 0 var(--status); }
+    60% { box-shadow: 0 0 0 16px transparent; }
+    100% { box-shadow: 0 0 10px var(--status), 0 0 22px var(--status); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bead { transition: none; }
+    .bead.at-done { animation: none; }
+  }
+
+  .placeholder-note { font-size: 15px; color: var(--ink-dim); padding: 6px 0 4px; }
+
+  footer {
+    margin-top: 24px;
+    border-top: 1px solid var(--blue);
+    padding-top: 10px;
+    font-size: 14px;
+    color: var(--ink-dim);
+    line-height: 1.5;
+  }
+  /* Inside a theme: bead cards, same look as the dashboard drill-down cards */
+  .cards { display: grid; gap: 12px; }
+  .bcard { background: linear-gradient(180deg,#0b2d52,#061a33); border: 3px solid var(--blue); border-radius: 16px; box-shadow: 0 0 14px rgba(30,136,229,.5); padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+  .bcard .bn { font-size: 21px; font-weight: 900; color: var(--blue-text); line-height: 1.2; }
+  .bcard .pill { align-self: flex-start; font-size: 17px; font-weight: 900; color: #020a14; padding: 4px 10px; border-radius: 8px; }
+  .bcard .bd { font-size: 17px; line-height: 1.4; color: #e8eeec; }
+  .bcard .go { min-height: 48px; border-radius: 12px; background: #0a2240; border: 2px solid var(--blue); color: #fff; font-size: 17px; font-weight: 800; text-decoration: none; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The Abacus</h1>
+
+  <nav class="nav" id="nav"></nav>
+  <main id="board"></main>
+</div>
+
+<script>
+  // --- Data: each level is a board of beads; a bead can open a child board ---
+  const insuranceTypesTFT = {
+    title: "TFT insurances",
+    beads: [
+      { id: "pl", name: "Public Liability", pos: 100 },
+      { id: "pi", name: "Professional Indemnity", pos: 55 },
+      { id: "veh", name: "Vehicles", pos: 15 },
+      { id: "etc", name: "Other insurances", pos: 0 },
+    ],
+  };
+
+  const insuranceCompanies = {
+    title: "Insurances",
+    beads: [
+      { id: "km", name: "Killin Management (KM)", pos: 80 },
+      { id: "nccs", name: "Native Conifer Carbon Sink (NCCS)", pos: 45 },
+      { id: "tft", name: "Tropical Fire Technologies (TFT)", pos: 55, child: insuranceTypesTFT },
+    ],
+  };
+
+  // Task beads: source 2026-10-01-abacus-themes-beads.html (dashboard, 25 Sep). All "no status" → not started.
+  const theme1 = {
+    title: "Compliance & Reporting",
+    beads: [
+      { id: "cmi", name: "CMI Code of Conduct", detail: "NCCS is a member. FY24–25 annual report due.", pos: 30 },
+      { id: "ins", name: "Insurances", detail: "About 8 policies across 4 locations. Renewals not tracked.", pos: 55, child: insuranceCompanies },
+      { id: "forestry", name: "Forestry Australia Membership", detail: "Nomination package written. Not lodged.", pos: 10 },
+      { id: "asic", name: "ASIC Company Docs", detail: "Company docs for KM, TFT and NCCS. Detail to come.", pos: 80 },
+      { id: "accred", name: "Other Accreditations", detail: "List not finished. Daryl to add the rest.", pos: 0 },
+      { id: "aci-photos", name: "NCCS: ACI Code of Conduct — send photos", detail: "Photos needed before the application goes in.", pos: 0 },
+      { id: "aci-app", name: "NCCS: ACI Code of Conduct — submit application", detail: "Submit once the photos are in.", pos: 0 },
+      { id: "nccs-sms", name: "NCCS: review & approve SMS", detail: "SMS Version 2 drafted 17 Sep. Needs Daryl's sign-off.", pos: 0 },
+      { id: "km-sms", name: "KM: create SMS", detail: "No SMS yet. NCCS version can be the base.", pos: 0 },
+      { id: "tft-sms", name: "TFT: create SMS", detail: "No SMS yet. NCCS version can be the base.", pos: 0 },
+    ],
+  };
+
+  const theme2 = {
+    title: "Budgeting & Finance",
+    beads: [
+      { id: "km-tax", name: "KM: tax declaration — send access/invoices", detail: "BAS overdue. Accountant needs access and invoices.", pos: 0 },
+      { id: "km-pivotel", name: "KM: pay Pivotel, give Sara access", detail: "Pay the bill. Give Sara access to the account.", pos: 0 },
+      { id: "km-mitti", name: "KM: SafetyCulture Mitti billing — confirm payment method", detail: "Payment went through 28 Sep. Confirm the card on file.", pos: 0 },
+      { id: "tft-inv-batch", name: "TFT: invoice batch — 5 more needed", detail: "5 more invoices. TFT reports come first.", pos: 0 },
+      { id: "tft-inv-backlog", name: "TFT: clear invoicing backlog", detail: "Xero invoice access unresolved since July.", pos: 0 },
+    ],
+  };
+
+  const theme3 = {
+    title: "Comms & Media",
+    beads: [
+      { id: "tft-ciehf", name: "TFT: CIEHF fire program context for Sara", detail: "Brief Sara on the fire program.", pos: 0 },
+      { id: "km-library", name: "KM: Forestry Library — review new project", detail: "New project to review. 55 papers still to scan.", pos: 0 },
+    ],
+  };
+
+  const theme4 = {
+    title: "NCCS SylvaNaut Project",
+    beads: [
+      { id: "grant-tracker", name: "Grant-obligation tracker", detail: "Track SylvaNaut grant deliverables and due dates.", pos: 0 },
+      { id: "dermot", name: "Follow up Dermot Duncan — FPC data licence", detail: "FPC data licence signed 4 Sep.", pos: 0 },
+    ],
+  };
+
+  const theme5 = {
+    title: "TFT Savanna Fire Ops",
+    beads: [
+      { id: "report-batch", name: "Report batch — 5 more needed", detail: "5 more reports. Invoices follow.", pos: 0 },
+      { id: "cost-benefit", name: "Decade-long fire-ops cost-benefit analysis", detail: "Ten years of fire-ops costs against returns.", pos: 0 },
+      { id: "ops-backlog", name: "Ops task backlog (rake-hoes, leaf blowers)", detail: "Rake-hoes and leaf blowers ready for next season.", pos: 0 },
+      { id: "clinton", name: "Contract Clinton", detail: "GreenClimber contractor, through Rob McQueen.", pos: 0 },
+      { id: "dan-w", name: "Contract Dan W", detail: "Drone contractor.", pos: 0 },
+    ],
+  };
+
+  const theme6 = {
+    title: "Partnerships / BizDev / Alliances",
+    beads: [
+      { id: "symposium", name: "Register Daryl — 7–9 Oct Symposium", detail: "7–9 Oct. Get Daryl registered.", pos: 0 },
+      { id: "zoho", name: "Zoho migration cancellation follow-up", detail: "Chase the cancelled Zoho migration.", pos: 0 },
+    ],
+  };
+
+  const root = {
+    title: "Themes",
+    beads: [
+      { id: "t1", name: theme1.title, pos: 35, child: theme1 },
+      { id: "t2", name: theme2.title, pos: 0, child: theme2 },
+      { id: "t3", name: theme3.title, pos: 0, child: theme3 },
+      { id: "t4", name: theme4.title, pos: 0, child: theme4 },
+      { id: "t5", name: theme5.title, pos: 0, child: theme5 },
+      { id: "t6", name: theme6.title, pos: 0, child: theme6 },
+    ],
+  };
+
+  const STATUS = {
+    notstarted: { word: "Not started", color: "var(--s-notstarted)" },
+    underway:   { word: "Underway",    color: "var(--s-underway)" },
+    completed:  { word: "Completed",   color: "var(--s-completed)" },
+  };
+
+  function statusOf(pos) {
+    if (pos <= 0) return STATUS.notstarted;
+    if (pos >= 100) return STATUS.completed;
+    return STATUS.underway;
+  }
+
+  // Ends snap so "not started" and "completed" are easy to hit on a phone.
+  function posFromPointer(wire, clientX) {
+    const rect = wire.getBoundingClientRect();
+    const pct = ((clientX - rect.left) / rect.width) * 100;
+    if (pct <= 4) return 0;
+    if (pct >= 96) return 100;
+    return Math.round(pct);
+  }
+
+  // --- Router: each level has its own URL, e.g. #/t1/ins/tft ---
+  let stack = [root];
+
+  function resolveStackFromHash() {
+    const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+    let cur = root;
+    const s = [root];
+    for (const part of parts) {
+      const bead = cur.beads.find(b => b.id === part && b.child);
+      if (!bead) break;
+      cur = bead.child;
+      s.push(cur);
+    }
+    return s;
+  }
+
+  function pathForStack(s) {
+    const parts = [];
+    for (let i = 0; i < s.length - 1; i++) {
+      const bead = s[i].beads.find(b => b.child === s[i + 1]);
+      if (bead) parts.push(bead.id);
+    }
+    return parts.join("/");
+  }
+
+  function navigateTo(newStack) {
+    stack = newStack;
+    const path = pathForStack(stack);
+    history.pushState(null, "", path ? `#/${path}` : "#/");
+    render();
+    window.scrollTo(0, 0);
+  }
+
+  window.addEventListener("popstate", () => {
+    stack = resolveStackFromHash();
+    render();
+  });
+
+  // --- Rendering ---
+  function renderNav() {
+    const nav = document.getElementById("nav");
+    nav.hidden = false;
+    const back = `<button class="back-btn" id="backBtn">Back</button>`;
+    const crumbs = stack.slice(0, -1).map((b, i) =>
+      (i > 0 ? `<span class="crumb-sep">›</span>` : "") +
+      `<button class="crumb" data-idx="${i}">${b.title}</button>`
+    ).join("");
+    nav.innerHTML = back + crumbs;
+
+    const backBtn = document.getElementById("backBtn");
+    if (backBtn) backBtn.addEventListener("click", () => stack.length > 1 ? navigateTo(stack.slice(0, -1)) : (location.href = "dashboard-prototype.html"));
+    nav.querySelectorAll(".crumb").forEach(btn => {
+      btn.addEventListener("click", () => navigateTo(stack.slice(0, Number(btn.dataset.idx) + 1)));
+    });
+  }
+
+  function rowHtml(b) {
+    if (b.placeholder) {
+      return `
+        <div class="row">
+          <div class="row-top"><span class="bead-name">${b.name}</span></div>
+          <div class="placeholder-note">No beads yet</div>
+        </div>`;
+    }
+    return `
+      <div class="row" data-row="${b.id}">
+        <div class="row-top">
+          <div>
+            <span class="bead-name">${b.name}</span>
+            <span class="status-word"></span>
+          </div>
+          ${b.child ? `<button class="open-btn" data-open="${b.id}">Open ›</button>` : ""}
+        </div>
+        <div class="wire-row">
+          <div class="wire" data-wire="${b.id}">
+            <div class="bead" data-bead="${b.id}"></div>
+          </div>
+          <div class="wire-labels"><span>Not started</span><span>Completed</span></div>
+        </div>
+      </div>`;
+  }
+
+  function paint(b, animate) {
+    const row = document.querySelector(`.row[data-row="${b.id}"]`);
+    if (!row) return;
+    const st = statusOf(b.pos);
+    row.style.setProperty("--status", st.color);
+    row.querySelector(".status-word").textContent = st.word;
+    const bead = row.querySelector(".bead");
+    bead.style.left = `${b.pos}%`;
+    if (animate && b.pos >= 100) {
+      bead.classList.remove("at-done");
+      void bead.offsetWidth;
+      bead.classList.add("at-done");
+    }
+  }
+
+  // Dashboard status set: colour + word, one meaning each.
+  const ST = {
+    p: { word: "Action needed", color: "#d400ff" }, r: { word: "Blocked", color: "#ff1a4b" },
+    a: { word: "Underway", color: "#ff8c00" }, g: { word: "Decided", color: "#39ff14" },
+    c: { word: "Completed", color: "#00e5d4" }, n: { word: "No status", color: "#b0bec5" },
+  };
+  // Bead's own status if set (b.st), otherwise read from its old slider position.
+  const stOf = b => ST[b.st || (b.pos >= 100 ? "c" : b.pos > 0 ? "a" : "n")];
+
+  function cardHtml(b) {
+    const st = stOf(b);
+    return `
+      <div class="bcard">
+        <div class="bn">${b.name}</div>
+        <div class="pill" style="background:${st.color};box-shadow:0 0 10px ${st.color},0 0 22px ${st.color}">${st.word}</div>
+        ${b.detail ? `<div class="bd">${b.detail}</div>` : ""}
+        ${b.dropbox ? `<a class="go" href="${b.dropbox}" target="_blank" rel="noopener">Dropbox</a>` : ""}
+      </div>`;
+  }
+
+  function renderBoard() {
+    const board = stack[stack.length - 1];
+    const container = document.getElementById("board");
+    if (stack.length > 1) {
+      container.innerHTML = `
+        <h2 class="board-title">${board.title}</h2>
+        <div class="cards">${board.beads.map(cardHtml).join("")}</div>`;
+      return;
+    }
+    container.innerHTML = `
+      <h2 class="board-title">${board.title}</h2>
+      <div class="rows">${board.beads.map(rowHtml).join("")}</div>`;
+
+    board.beads.filter(b => !b.placeholder).forEach(b => {
+      paint(b, false);
+      const wire = container.querySelector(`[data-wire="${b.id}"]`);
+      const bead = container.querySelector(`[data-bead="${b.id}"]`);
+
+      wire.addEventListener("click", (e) => {
+        if (e.target === bead) return;
+        b.pos = posFromPointer(wire, e.clientX);
+        paint(b, true);
+      });
+
+      let dragging = false;
+      bead.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        bead.classList.add("dragging");
+        bead.setPointerCapture(e.pointerId);
+      });
+      bead.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        b.pos = posFromPointer(wire, e.clientX);
+        paint(b, false);
+      });
+      const endDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        bead.classList.remove("dragging");
+        paint(b, true);
+      };
+      bead.addEventListener("pointerup", endDrag);
+      bead.addEventListener("pointercancel", endDrag);
+
+      const openBtn = container.querySelector(`[data-open="${b.id}"]`);
+      if (openBtn) openBtn.addEventListener("click", () => navigateTo([...stack, b.child]));
+    });
+  }
+
+  function render() {
+    renderNav();
+    renderBoard();
+  }
+
+  stack = resolveStackFromHash();
+  render();
+</script>
+</body>
+</html>

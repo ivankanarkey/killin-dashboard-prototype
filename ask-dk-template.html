@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026-09-28 0330 Complex WWWWWH template for staff asks to Daryl</title><style>
+:root{color-scheme:dark;--bg:#0D1214;--ink:#E7EDEA;--mut:#9FB0AB;--bd:#233034;--pan:#131c1e;--pur:#d400ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.45 -apple-system,"Segoe UI",sans-serif}
+#wrap{max-width:520px;margin:0 auto;padding:12px;transform-origin:top center}
+h1{font-size:21px;margin:6px 0 2px}h2{font-size:17px;margin:20px 0 8px}.mut{color:var(--mut);font-size:14px}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);display:flex;gap:6px;padding:6px 0;border-bottom:1px solid var(--bd)}
+button{min-width:44px;min-height:44px;background:#16201f;color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:15px;padding:0 10px}
+.step{background:var(--pan);border:1px solid var(--bd);border-left:6px solid var(--pur);border-radius:8px;padding:10px;margin:8px 0}
+.step .w{color:var(--pur);font-weight:700;font-size:13px}
+.ent{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ent button{width:100%}.ent button.on{border-color:var(--ink);font-weight:700}
+.f{background:var(--pan);border:1px solid var(--bd);border-radius:8px;padding:10px;margin:8px 0}
+.f label{font-weight:700;display:block}.f .h{color:var(--mut);font-size:14px;margin:2px 0 6px}
+textarea,input{width:100%;background:#0a0f10;color:var(--ink);border:1px solid var(--bd);border-radius:6px;font:16px -apple-system,sans-serif;padding:8px}
+textarea{min-height:60px}
+details{background:var(--pan);border:1px solid var(--bd);border-radius:8px;margin:8px 0;padding:0 10px}
+summary{min-height:44px;display:flex;align-items:center;font-weight:600;cursor:pointer}
+details li{font-size:15px;margin:4px 0}
+#msg{color:var(--mut);font-size:14px;min-height:20px}
+footer{margin:24px 0;font-size:13px;color:var(--mut);border-top:1px solid var(--bd);padding-top:8px}
+</style></head><body>
+<div class="bar"><button onclick="zoomBy(0.1)">+</button><button onclick="zoomBy(-0.1)">−</button><button onclick="zoomFit()">FIT</button><button onclick="location.href='ask-dk.html'">Back</button><button onclick="location.href='dashboard-prototype.html'">Dashboard</button><button onclick="clearAll()">Reset</button></div>
+<div id="wrap"><h1>Complex WWWWWH template for staff asks to Daryl</h1><div class="mut">2026-09-28 0330 · for Sara, Ivana & all staff</div>
+<h2>Which part of the business is this for?</h2><div class="mut">Tap all that apply.</div><div class="ent" id="ent"><button onclick="pick(this)">KM</button><button onclick="pick(this)">TFT</button><button onclick="pick(this)">NCCS</button><button onclick="pick(this)">SylvaNaut</button><button onclick="pick(this)">Library</button><button onclick="pick(this)">MULTIPLE</button></div>
+<h2>The ask</h2><div class="f"><label for="ask">What do you need from Daryl? One line.</label><div class="h">Be specific.</div><textarea id="ask"></textarea></div>
+<h2>WWWWWH</h2>
+<details><summary>Who</summary><div class="h" style="margin-top:8px">Who's asking & for who?</div><textarea id="q1"></textarea><div class="h" style="margin-top:8px">Who else is involved?</div><textarea id="q2"></textarea><div class="h" style="margin-top:8px">Who needs further input, who does the work & who needs to know?</div><textarea id="q3"></textarea><div style="height:10px"></div></details>
+<details><summary>What</summary><div class="h" style="margin-top:8px">What's the detail behind the ask?</div><textarea id="q4"></textarea><div class="h" style="margin-top:8px">What happens if it waits, or if we do nothing?</div><textarea id="q5"></textarea><div style="height:10px"></div></details>
+<details><summary>Why</summary><div class="h" style="margin-top:8px">Why does the timing matter?</div><textarea id="q6"></textarea><div class="h" style="margin-top:8px">What does it get us, or what trouble does it avoid?</div><textarea id="q7"></textarea><div class="h" style="margin-top:8px">What else does it tie into?</div><textarea id="q8"></textarea><div style="height:10px"></div></details>
+<details><summary>When</summary><div class="h" style="margin-top:8px">Is there a deadline? Is it HARD (external or contractual) or SOFT (internal)?</div><textarea id="q9"></textarea><div class="h" style="margin-top:8px">How long will it take?</div><textarea id="q10"></textarea><div class="h" style="margin-top:8px">What depends on it?</div><textarea id="q11"></textarea><div style="height:10px"></div></details>
+<details><summary>Where</summary><div class="h" style="margin-top:8px">Where is it now?</div><textarea id="q12"></textarea><div class="h" style="margin-top:8px">Where does it end up?</div><textarea id="q13"></textarea><div class="h" style="margin-top:8px">Where does it happen?</div><textarea id="q14"></textarea><div style="height:10px"></div></details>
+<details><summary>How</summary><div class="h" style="margin-top:8px">What ways could it be done, & who would do it?</div><textarea id="q15"></textarea><div class="h" style="margin-top:8px">What does it cost, & what does it commit us to?</div><textarea id="q16"></textarea><div class="h" style="margin-top:8px">What would Daryl need to sign off, if anything?</div><textarea id="q17"></textarea><div style="height:10px"></div></details>
+
+<h2>Links to files</h2><div class="f"><div class="h">Dropbox, Outlook or similar link if there is one. If not, say where the file is.</div><div id="links"></div><button onclick="addLink()" style="width:100%;margin-top:6px">+ Add link</button></div>
+<details><summary>Anything else</summary><textarea id="extra" style="margin-bottom:10px"></textarea></details>
+<button onclick="copyAll()" style="width:100%">Copy</button><div id="msg"></div>
+<h2>Rules</h2><details><summary>Do</summary><ul><li>Ask first. Detail after.</li><li>Use the questions that fit the ask. Skip the rest.</li><li>Partners by their proper name: Wrybill Robotics, Lincoln Agritech.</li><li>Plain words. No jargon.</li><li>Link files where you can. If there is no link, say where the file is.</li></ul></details><details><summary>Never</summary><ul><li>"I'm here if you need me" · "Let me know if you need anything."</li><li>Blaming people instead of describing the job.</li></ul></details>
+<footer>Colour rule: purple = action required · red = blocked · orange = underway · green = decided only · turquoise = completed.</footer></div>
+<script>
+let z=1,entity='';const w=document.getElementById('wrap');
+function zoomBy(d){z=Math.max(0.6,Math.min(2,z+d));w.style.transform='scale('+z+')'}
+function zoomFit(){z=1;w.style.transform='none'}
+function pick(b){b.classList.toggle('on');entity=[...document.querySelectorAll('#ent button.on')].map(x=>x.textContent).join(', ')}
+function v(id){return document.getElementById(id).value.trim()}
+function addLink(){const d=document.createElement('div');d.style.margin='6px 0';d.innerHTML='<input class="lk-name" placeholder="What the file is" style="margin-bottom:4px"><input class="lk-url" type="text" placeholder="Link, or where the file is">';document.getElementById('links').appendChild(d)}
+function linkText(){let out=[],bad=0;document.querySelectorAll('#links > div').forEach(d=>{const n=d.querySelector('.lk-name').value.trim(),u=d.querySelector('.lk-url').value.trim();if(!n&&!u)return;out.push((n||'File')+': '+u)});return {out,bad}}
+function copyAll(){let t='ASK: '+v('ask')+'\nFor: '+entity;t+='\n\nWho';if(v('q1'))t+='\n- '+"Who's asking & for who?"+' '+v('q1');if(v('q2'))t+='\n- '+"Who else is involved?"+' '+v('q2');if(v('q3'))t+='\n- '+"Who needs further input, who does the work & who needs to know?"+' '+v('q3');t+='\n\nWhat';if(v('q4'))t+='\n- '+"What's the detail behind the ask?"+' '+v('q4');if(v('q5'))t+='\n- '+"What happens if it waits, or if we do nothing?"+' '+v('q5');t+='\n\nWhy';if(v('q6'))t+='\n- '+"Why does the timing matter?"+' '+v('q6');if(v('q7'))t+='\n- '+"What does it get us, or what trouble does it avoid?"+' '+v('q7');if(v('q8'))t+='\n- '+"What else does it tie into?"+' '+v('q8');t+='\n\nWhen';if(v('q9'))t+='\n- '+"Is there a deadline? Is it HARD (external or contractual) or SOFT (internal)?"+' '+v('q9');if(v('q10'))t+='\n- '+"How long will it take?"+' '+v('q10');if(v('q11'))t+='\n- '+"What depends on it?"+' '+v('q11');t+='\n\nWhere';if(v('q12'))t+='\n- '+"Where is it now?"+' '+v('q12');if(v('q13'))t+='\n- '+"Where does it end up?"+' '+v('q13');if(v('q14'))t+='\n- '+"Where does it happen?"+' '+v('q14');t+='\n\nHow';if(v('q15'))t+='\n- '+"What ways could it be done, & who would do it?"+' '+v('q15');if(v('q16'))t+='\n- '+"What does it cost, & what does it commit us to?"+' '+v('q16');if(v('q17'))t+='\n- '+"What would Daryl need to sign off, if anything?"+' '+v('q17');
+if(v('extra'))t+='\n\nAnything else: '+v('extra');
+const L=linkText(),m=document.getElementById('msg');t+='\n\nLinks:\n'+(L.out.length?L.out.join('\n'):'NONE');
+if(navigator.clipboard){navigator.clipboard.writeText(t).then(()=>m.textContent='Copied.',()=>fb(t,m))}else fb(t,m)}
+function fb(t,m){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');m.textContent='Copied.'}catch(e){m.textContent='Copy failed. Select & copy by hand.'}a.remove()}
+function clearAll(){document.querySelectorAll('textarea,input').forEach(x=>x.value='');document.querySelectorAll('#ent button').forEach(x=>x.classList.remove('on'));entity='';document.getElementById('links').innerHTML='';addLink();zoomFit();scrollTo(0,0);document.getElementById('msg').textContent=''}
+addLink();
+</script>
+<script src="ask-dk-data.js"></script>
+<script>
+// Prototype: fill the template with the ask chosen on the Ask DK board (?a=<index>).
+(function(){const a=ASKS[+new URLSearchParams(location.search).get('a')];if(!a)return;
+ document.querySelectorAll('#ent button').forEach(b=>{if(a.part.includes(b.textContent))pick(b)});
+ for(const k in a){const el=document.getElementById(k);if(el&&el.tagName==='TEXTAREA'&&a[k])el.value=a[k]}
+ const grow=()=>document.querySelectorAll('textarea').forEach(t=>{if(t.value&&t.offsetParent){t.style.height='auto';t.style.height=(t.scrollHeight+4)+'px'}});grow();
+ document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',grow));
+ if(a.links.length){document.getElementById('links').innerHTML='';a.links.forEach(([n,u])=>{addLink();const d=document.querySelector('#links > div:last-child');d.querySelector('.lk-name').value=n;d.querySelector('.lk-url').value=u})}
+})();
+</script></body></html>

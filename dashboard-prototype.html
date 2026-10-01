@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Killin Group Dashboard</title>
+<style>
+:root{color-scheme:dark;--u:min(1vh,1.25vw);--BL:#1e88e5;--hd:#5fb3ff;--ink:#fff;--muted:#bcd4f0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#020a14;color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+button{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
+#dash{position:absolute;inset:0;display:grid;grid-template-rows:1fr auto;gap:calc(1.6*var(--u));padding:calc(2*var(--u)) calc(2.5*var(--u)) calc(1.6*var(--u) + env(safe-area-inset-bottom));
+ background:radial-gradient(ellipse 90% 80% at 50% 40%,#0a2744 0%,#041326 55%,#020a14 100%),repeating-linear-gradient(0deg,transparent 0 22px,rgba(30,136,229,.07) 22px 23px),repeating-linear-gradient(90deg,transparent 0 22px,rgba(30,136,229,.07) 22px 23px);background-blend-mode:screen}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:1.15fr 1.1fr .95fr .5fr;gap:calc(1.6*var(--u));min-height:0}
+.co{grid-column:span 4}.big{grid-column:span 6}.low{grid-column:span 3}
+.pan{position:relative;border-radius:calc(2.2*var(--u));background:linear-gradient(180deg,#0b2d52,#061a33);border:calc(.6*var(--u)) solid var(--BL);box-shadow:0 0 calc(2.2*var(--u)) rgba(30,136,229,.5),inset 0 0 calc(3*var(--u)) rgba(30,136,229,.22);display:flex;flex-direction:column;align-items:center;padding:calc(1.2*var(--u));min-height:0;overflow:hidden}
+.pan::before,.pan::after{content:"";position:absolute;width:calc(2.4*var(--u));height:calc(2.4*var(--u));border:calc(.5*var(--u)) solid #90caff}
+.pan::before{left:calc(.7*var(--u));top:calc(.7*var(--u));border-right:0;border-bottom:0}.pan::after{right:calc(.7*var(--u));bottom:calc(.7*var(--u));border-left:0;border-top:0}
+.pan.sel{border-color:#90caff;box-shadow:0 0 calc(4*var(--u)) rgba(30,136,229,.95),inset 0 0 calc(3*var(--u)) rgba(30,136,229,.35)}
+.nm{font-size:max(calc(4*var(--u)),16px);font-weight:900;color:var(--hd);text-shadow:0 0 10px rgba(30,136,229,.9);white-space:nowrap;line-height:1.1}
+.sub{font-size:max(calc(2.6*var(--u)),12px);color:var(--muted);font-weight:700;margin-top:calc(.3*var(--u))}
+.sym{flex:1;width:100%;display:flex;align-items:center;justify-content:center;min-height:0;padding-top:calc(.6*var(--u))}
+.sym svg{width:100%;height:100%;max-height:100%}
+/* company bars: small, symbolic */
+.bars{display:flex;align-items:flex-end;gap:calc(1.2*var(--u));height:70%;max-height:calc(12*var(--u))}
+.bars i{width:calc(3*var(--u));border-radius:calc(.6*var(--u)) calc(.6*var(--u)) 0 0}
+/* horizontal bars */
+.hbars{width:78%;display:flex;flex-direction:column;justify-content:center;gap:calc(1*var(--u));height:70%;max-height:calc(12*var(--u))}
+.hb{flex:1;max-height:calc(2.6*var(--u));min-height:6px;background:#0a2240;border-radius:calc(.6*var(--u));overflow:hidden}
+.hb i{display:block;height:100%;border-radius:calc(.6*var(--u))}
+/* library shelf */
+.shelf{display:flex;align-items:flex-end;gap:calc(.4*var(--u));height:70%;max-height:calc(11*var(--u));width:88%;justify-content:center;border-bottom:calc(.5*var(--u)) solid #90caff;padding:0 calc(.6*var(--u))}
+.shelf i{flex:1;max-width:calc(2*var(--u));border-radius:calc(.4*var(--u)) calc(.4*var(--u)) 0 0}
+/* extra buttons: Emails, Meetings, Ask DK */
+.xb{grid-column:span 4;justify-content:center;min-height:48px}
+.xb .nm{font-size:max(calc(3.6*var(--u)),16px)}
+/* lamps */
+.lamp{border-radius:calc(2.2*var(--u));display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:48px;border:calc(.5*var(--u)) solid}
+.lamp b{font-size:max(calc(3.8*var(--u)),16px);font-weight:900;color:#000}
+.lamp span{font-size:max(calc(3*var(--u)),13px);font-weight:800;color:#000}
+.lamp.u{background:#ff2ec4;border-color:#ffb3ec;box-shadow:0 0 12px #ff2ec4,0 0 30px #ff2ec4}
+.lamp.u.has{animation:fu 5s ease-in-out infinite}
+.lamp.i{background:#fff;border-color:#fff;box-shadow:0 0 12px #fff,0 0 26px #ffffffaa}
+.lamp.c{background:#00e5d4;border-color:#a7fff7;box-shadow:0 0 12px #00e5d4,0 0 30px #00e5d4}
+@keyframes fu{0%,80%,100%{filter:none}90%{filter:brightness(.6)}}
+/* flux animation */
+.flow{stroke-dasharray:6 8;animation:dash 6s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-140}}
+.node{animation:bob 7s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(4px)}}
+/* bottom bar */
+.bot{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:calc(2*var(--u))}
+.info{font-size:max(calc(3.6*var(--u)),16px);font-weight:800;line-height:1.2}
+.info small{display:block;font-size:max(calc(2.6*var(--u)),13px);color:var(--muted);font-weight:600}
+.wheelrow{display:flex;align-items:center;gap:calc(1.4*var(--u))}
+.turn{width:calc(9*var(--u));height:calc(9*var(--u));min-width:48px;min-height:48px;border-radius:50%;border:calc(.5*var(--u)) solid var(--BL);background:#061a33;color:var(--hd);font-size:max(calc(3.6*var(--u)),18px);font-weight:800}
+#wheel{width:calc(14*var(--u));height:calc(14*var(--u));min-width:64px;min-height:64px;transition:transform .4s ease}
+.ctrls{display:flex;gap:calc(1*var(--u))}
+.ctrls button{min-width:48px;min-height:48px;padding:0 calc(1.4*var(--u));border-radius:calc(1.4*var(--u));border:calc(.5*var(--u)) solid var(--BL);background:#061a33;color:var(--hd);font-size:max(calc(3.2*var(--u)),16px);font-weight:800}
+/* drill */
+#drill{position:absolute;inset:0;display:none;flex-direction:column;background:radial-gradient(ellipse 90% 80% at 50% 40%,#0a2744,#020a14 80%);z-index:10;padding:calc(2.4*var(--u)) calc(3*var(--u)) calc(2*var(--u) + env(safe-area-inset-bottom))}
+#drill.show{display:flex}
+.dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:calc(1.6*var(--u))}
+.dh h2{font-size:max(calc(5.2*var(--u)),22px);font-weight:900;color:var(--hd);text-shadow:0 0 12px rgba(30,136,229,.9)}
+#bBack{min-width:48px;min-height:48px;padding:0 calc(3*var(--u));border-radius:calc(1.4*var(--u));background:#ffe600;color:#000;border:calc(.5*var(--u)) solid #fff59d;box-shadow:0 0 10px #ffe600,0 0 24px #ffe600;font-size:max(calc(3.8*var(--u)),17px);font-weight:900}
+.areas{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:calc(1.4*var(--u));min-height:0}
+.area{border-radius:calc(2.2*var(--u));background:linear-gradient(180deg,#0b2d52,#061a33);border:calc(.6*var(--u)) solid var(--BL);box-shadow:0 0 calc(2*var(--u)) rgba(30,136,229,.5);display:flex;flex-direction:column;padding:calc(1.6*var(--u));gap:calc(1*var(--u));min-height:0;overflow:auto}
+.area .an{font-size:max(calc(3.8*var(--u)),17px);font-weight:900;color:var(--hd);line-height:1.1}
+.area .st{font-size:max(calc(3.2*var(--u)),14px);font-weight:900;padding:calc(.5*var(--u)) calc(1*var(--u));border-radius:calc(.8*var(--u));align-self:flex-start;color:#020a14}
+.area .de{font-size:max(calc(3.2*var(--u)),15px);line-height:1.35;color:#e8eeec}
+.area a,.area .go{margin-top:auto;min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:calc(1.2*var(--u));background:#0a2240;border:2px solid var(--BL);color:#fff;text-decoration:none;font-size:max(calc(3.2*var(--u)),15px);font-weight:800;padding:calc(.8*var(--u))}
+.area.files{border-style:dashed}
+.foot{font-size:max(calc(2.4*var(--u)),12px);color:var(--muted);margin-top:calc(1.2*var(--u));line-height:1.4}
+@media (orientation:portrait){
+ .grid{grid-template-rows:1fr 1.4fr .75fr .8fr .6fr}
+ .pan.low{grid-column:span 12;flex-direction:row;gap:calc(2*var(--u))}
+ .pan.low .sym{height:100%}
+ .lamp.low{grid-column:span 4}
+ .lamp b{font-size:max(calc(3.2*var(--u)),14px)}
+ .bot{grid-template-columns:auto 1fr;row-gap:calc(1.2*var(--u))}
+ .info{grid-column:1/3}
+ .ctrls{flex-wrap:wrap;justify-content:flex-end}
+ .areas{grid-auto-flow:row;grid-auto-rows:auto;overflow-y:auto}
+ .area{overflow:visible}
+}
+@media (prefers-reduced-motion:reduce){.flow,.node,.lamp.u.has{animation:none}#wheel{transition:none}}
+/* Drill-down: tasks stacked as cards, same look as the Abacus bead cards, every orientation */
+#drill .areas{display:flex;flex-direction:column;gap:12px;overflow-y:auto;width:100%;max-width:720px;margin:0 auto;padding-bottom:4px}
+#drill .area{flex:none;overflow:visible;border-width:3px;border-radius:16px;padding:14px 16px;gap:10px;box-shadow:0 0 14px rgba(30,136,229,.5)}
+#drill .area .an{font-size:21px;line-height:1.2}
+#drill .area .st{font-size:17px;padding:4px 10px;border-radius:8px}
+#drill .area .de{font-size:17px;line-height:1.4}
+#drill .area a,#drill .area .go{margin-top:0;font-size:17px;border-radius:12px}
+#drill .foot{max-width:720px;margin-left:auto;margin-right:auto;width:100%}
+.dh{max-width:720px;width:100%;margin-left:auto;margin-right:auto}
+</style>
+</head>
+<body>
+<div id="dash">
+  <div class="grid" id="grid"></div>
+  <div class="bot">
+    <div class="info" id="info"></div>
+    <div class="wheelrow">
+      <button class="turn" id="tl" aria-label="Turn left">◀</button>
+      <button id="wheel" aria-label="Go into selected"></button>
+      <button class="turn" id="tr" aria-label="Turn right">▶</button>
+    </div>
+    <div class="ctrls"><button id="bOut" aria-label="Zoom out">−</button><button id="bFit">FIT</button><button id="bIn" aria-label="Zoom in">+</button><button id="bReset">Reset</button></div>
+  </div>
+</div>
+
+<div id="drill">
+  <div class="dh"><h2 id="dname"></h2><button id="bBack">Back</button></div>
+  <div class="areas" id="areas"></div>
+</div>
+
+<script>
+const C={r:'#ff1a4b',p:'#d400ff',a:'#ff8c00',g:'#39ff14',c:'#00e5d4',n:'#b0bec5'};
+const W={r:'Blocked',p:'Action needed',a:'Underway',g:'Decided',c:'Completed',n:'No status'};
+const H={c:1,g:1,a:.7,p:.45,r:.3,n:.2};
+const DB='https://www.dropbox.com/home/Daryl%20Killin/';
+const KM=DB+'1_1_Killin%20Management';
+const CRUNCH=KM+'/KillinIT%20Dropbox%20Crunch%20Aug%202026';
+const B=[
+ {id:'km',n:'KM',full:'Killin Management',sub:'Company 1',cls:'co',k:'dial',files:KM,t:[
+  ['Staffing','a','DAMA variation to FNQ DAMA Team. Four gaps open.'],
+  ['Profile','a','Forestry Australia nomination built. Submission not confirmed.'],
+  ['Funding evidence','a','AFWI support: email evidence only.']]},
+ {id:'tft',n:'TFT',full:'Tropical Fire Technologies',sub:'Company 2',cls:'co',k:'hbars',files:KM+'/Tropical%20Forest%20Tree',t:[
+  ['Clients','g','Five clients with 2026–27 files: APN Cape York, Batavia BTOAC, Alka Bawar, Gondwana Carbon, KASC.',KM+'/Tropical%20Forest%20Tree/Clients%20Partners%20%26%20Suppliers'],
+  ['Money','r','Xero invoice access unresolved since July.'],
+  ['Crew','n','Three subcontractors plus operations support.']]},
+ {id:'ncc',n:'NCCS',full:'Native Conifer Carbon Sink',sub:'Company 3',cls:'co',k:'bars',files:KM+'/Native%20Conifer%20Carbon%20Sink',t:[
+  ['SylvaNaut','a','Own button on the dashboard.',null,'syl'],
+  ['Contracts','g','Lincoln Agritech subcontract, 15 May 2026.',KM+'/Native%20Conifer%20Carbon%20Sink'],
+  ['Carbon','p','Carbon and reforestation not searched yet.']]},
+ {id:'syl',n:'SylvaNaut',full:'SylvaNaut',sub:'Project in flux',cls:'big',k:'flux',t:[
+  ['Partners','r','Lincoln Agritech milestone 1 & 2 not delivered. Datum error parked.'],
+  ['Coordinator','r','Coordinator pack was due 14 Sep 2026.'],
+  ['Milestones','a','Milestone 3 draft 1 Sep. Milestone 4 changed 25 Sep.',DB+'SylvaNaut/10.%20Project%20management/2.2.1.%20Deliverables/Milestones'],
+  ['Scope','g','North Queensland first. Three species. Model mid-2027.'],
+  ['Data','g','FPC data licence signed 4 Sep 2026.',DB+'SylvaNaut/3.%20Data']]},
+ {id:'aba',n:'Abacus',full:'The Abacus',sub:'Task manager',cls:'big',k:'abacus',t:[
+  ['Folder count','g','Spreadsheet counts 2,217 Dropbox folders, 11 levels deep. Built 3 Aug 2026.',CRUNCH],
+  ['Ranking','p','Next step: rank what matters and push it up to this dashboard. Not built.'],
+  ['Untagged folders','p','325 folders have no company tag.',CRUNCH],
+  ['Never opened','a','932 end folders never opened. Last six checks found nothing new.',CRUNCH],
+  ['Email screening','p','Five time buckets: do now, 2–3 days, fortnight, 2 months, 3–12 months. Designed, not built.'],
+  ['Access','r','Library, TFT and Sara Transfer folders have no member list.'],
+  ['Mac backup','p','Never mapped.'],
+  ['DK Personal','g','Excluded. Never opened.']]},
+ {id:'lib',n:'Library',full:'KillinIT Library',sub:'Technical & historical',cls:'low',k:'shelf',t:[
+  ['Papers sorted','g','499 papers named and sorted.',CRUNCH],
+  ['To scan','p','55 papers have no digital copy. List already made.',CRUNCH],
+  ['G26','p','One ID, two titles, one file. You pick the right title.'],
+  ['Separate room','p','Your words. Meaning not yet given.'],
+  ['Sealed','r','Kept off the web. One AI reader pointed inward. Not built.']]}
+];
+const TAG={};
+const X=['Emails','Meetings','Ask DK'];
+const tagged=k=>B.flatMap(b=>b.t.filter(t=>(TAG[t[0]]||'').includes(k)).map(t=>({b,t})));
+
+function sym(b){const ts=b.t;
+ if(b.k==='dial'){const P=(r,a)=>[100+Math.sin(a*Math.PI/180)*r,100-Math.cos(a*Math.PI/180)*r],A=(r,a0,a1)=>{const p=P(r,a0),q=P(r,a1);return 'M'+p[0]+' '+p[1]+' A'+r+' '+r+' 0 '+((a1-a0)>180?1:0)+' 1 '+q[0]+' '+q[1]};
+   const n=ts.length,gap=5,span=(240-gap*(n-1))/n;let s='<svg viewBox="-10 -6 220 170" preserveAspectRatio="xMidYMid meet"><path d="'+A(80,-120,120)+'" stroke="#0a2240" stroke-width="20" fill="none"/>';
+   ts.forEach((t,i)=>{const a=-120+i*(span+gap);s+='<path d="'+A(80,a,a+span)+'" stroke="'+C[t[1]]+'" stroke-width="16" fill="none" style="filter:drop-shadow(0 0 6px '+C[t[1]]+')"/>'});
+   for(let i=0;i<=8;i++){const a=-120+i*30,p=P(62,a),q=P(54,a);s+='<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="#90caff" stroke-width="2"/>'}
+   const v=ts.reduce((x,t)=>x+H[t[1]],0)/n,e=P(66,-120+240*v);
+   return s+'<line x1="100" y1="100" x2="'+e[0]+'" y2="'+e[1]+'" stroke="#fff" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="100" r="9" fill="#fff"/></svg>'}
+ if(b.k==='hbars')return '<div class="hbars">'+ts.map(t=>'<div class="hb"><i style="width:'+(H[t[1]]*100)+'%;background:'+C[t[1]]+';box-shadow:0 0 8px '+C[t[1]]+',0 0 16px '+C[t[1]]+'"></i></div>').join('')+'</div>';
+ if(b.k==='bars')return '<div class="bars">'+ts.map(t=>'<i style="height:'+(H[t[1]]*100)+'%;background:'+C[t[1]]+';box-shadow:0 0 8px '+C[t[1]]+',0 0 16px '+C[t[1]]+'"></i>').join('')+'</div>';
+ if(b.k==='shelf'){let s='';const hs=[.8,.65,.9,.7,.55,.85,.75,.6,.95,.7];ts.forEach((t,i)=>{for(let j=0;j<2;j++){const h=hs[(i*2+j)%hs.length];s+='<i style="height:'+(h*100)+'%;background:'+C[t[1]]+';box-shadow:0 0 6px '+C[t[1]]+'"></i>'}});return '<div class="shelf">'+s+'</div>'}
+ if(b.k==='abacus'){const rows=ts.slice(0,5);let s='<svg viewBox="0 0 240 120" preserveAspectRatio="xMidYMid meet"><rect x="6" y="4" width="228" height="112" rx="8" fill="none" stroke="#90caff" stroke-width="3"/>';
+   rows.forEach((t,r)=>{const y=18+r*21;s+='<line x1="12" y1="'+y+'" x2="228" y2="'+y+'" stroke="#1e88e5" stroke-width="2"/>';const n=Math.round(H[t[1]]*8);for(let k=0;k<8;k++){const x=k<n?24+k*16:228-(8-k)*16+4;s+='<ellipse cx="'+x+'" cy="'+y+'" rx="7" ry="8" fill="'+(k<n?C[t[1]]:'#0a2240')+'" stroke="'+(k<n?'#fff':'#1e88e5')+'" stroke-width="1" style="'+(k<n?'filter:drop-shadow(0 0 4px '+C[t[1]]+')':'')+'"/>'}});
+   return s+'</svg>'}
+ if(b.k==='flux'){const pts=[[30,70],[80,30],[130,78],[180,34],[222,68]];let s='<svg viewBox="0 0 250 110" preserveAspectRatio="xMidYMid meet">';
+   s+='<path class="flow" d="M10 55 C 50 5, 90 105, 130 55 S 210 5, 245 55" stroke="#5fb3ff" stroke-width="2.5" fill="none" opacity=".7"/>';
+   s+='<path class="flow" style="animation-duration:9s" d="M10 65 C 55 110, 95 10, 135 62 S 205 110, 245 62" stroke="#90caff" stroke-width="1.5" fill="none" opacity=".5"/>';
+   for(let i=0;i<pts.length-1;i++)s+='<line class="flow" style="animation-duration:'+(5+i)+'s" x1="'+pts[i][0]+'" y1="'+pts[i][1]+'" x2="'+pts[i+1][0]+'" y2="'+pts[i+1][1]+'" stroke="'+C[ts[i+1][1]]+'" stroke-width="2.5"/>';
+   ts.forEach((t,i)=>{s+='<g class="node" style="animation-delay:'+(i*1.3)+'s"><circle cx="'+pts[i][0]+'" cy="'+pts[i][1]+'" r="10" fill="'+C[t[1]]+'" style="filter:drop-shadow(0 0 6px '+C[t[1]]+') drop-shadow(0 0 12px '+C[t[1]]+')"/></g>'});
+   return s+'</svg>'}}
+
+let sel=3,zoom=1;
+const ORDER=['km','tft','ncc','syl','aba','lib'];
+function draw(){
+ const u=tagged('u').length,i=tagged('i').length;
+ document.getElementById('grid').innerHTML=B.map((b,ix)=>'<button class="pan '+b.cls+(ix===sel?' sel':'')+'" data-i="'+ix+'"><div class="nm">'+b.n+'</div><div class="sub">'+b.sub+'</div><div class="sym">'+sym(b)+'</div></button>').join('')+
+  '<button class="lamp u low'+(u?' has':'')+'" data-k="u"><b>Urgent</b><span>'+(u?u:'Not set')+'</span></button>'+
+  '<button class="lamp i low" data-k="i"><b>Important</b><span>'+(i?i:'Not set')+'</span></button>'+
+  '<button class="lamp c low" data-k="c"><b>COMPLETED</b><span>Not set</span></button>'+
+  X.map(x=>'<button class="pan xb" data-x="'+x+'"><div class="nm">'+x+'</div></button>').join('');
+ document.querySelectorAll('.pan').forEach(p=>p.onclick=()=>{const ix=+p.dataset.i;if(isNaN(ix))return;sel=ix;draw();drill(B[ix])});
+ document.querySelectorAll('.lamp').forEach(l=>l.onclick=()=>showTag(l.dataset.k));
+ document.querySelectorAll('.xb').forEach(x=>x.onclick=()=>showX(x.dataset.x));
+ const b=B[sel];document.getElementById('info').innerHTML=b.full+'<small>'+b.sub+'. Tap to go in.</small>';
+ document.getElementById('wheel').style.transform='rotate('+((sel-3)*40)+'deg)'}
+document.getElementById('wheel').innerHTML='<svg viewBox="0 0 100 100" width="100%" height="100%"><circle cx="50" cy="50" r="43" fill="none" stroke="#1e88e5" stroke-width="10"/><path d="M9 52 L36 52 M64 52 L91 52 M50 64 L50 92" stroke="#1e88e5" stroke-width="10" stroke-linecap="round"/><circle cx="50" cy="52" r="15" fill="#061a33" stroke="#fff" stroke-width="3"/><rect x="46" y="3" width="8" height="11" rx="2" fill="#fff"/></svg>';
+document.getElementById('tl').onclick=()=>{sel=(sel+B.length-1)%B.length;draw()};
+document.getElementById('tr').onclick=()=>{sel=(sel+1)%B.length;draw()};
+document.getElementById('wheel').onclick=()=>drill(B[sel]);
+function card(t,body){return '<div class="area"><div class="an">'+(body?body+': ':'')+t[0]+'</div><div class="st" style="background:'+C[t[1]]+';box-shadow:0 0 10px '+C[t[1]]+',0 0 22px '+C[t[1]]+'">'+W[t[1]]+'</div><div class="de">'+t[2]+'</div>'+(t[3]?'<a href="'+t[3]+'" target="_blank" rel="noopener">Dropbox</a>':'')+(t[4]?'<button class="go" data-go="'+t[4]+'">Go in</button>':'')+'</div>'}
+function bindGo(){document.querySelectorAll('[data-go]').forEach(g=>g.onclick=()=>{sel=B.findIndex(x=>x.id===g.dataset.go);draw();drill(B[sel])})}
+function drill(b){if(b.id==='aba'){location.href='abacus-prototype.html';return}
+ document.getElementById('dname').textContent=b.full;
+ document.getElementById('areas').innerHTML=b.t.map(t=>card(t)).join('')+(b.files?'<div class="area files"><div class="an">Company files</div><div class="de">This company\'s Dropbox folders. Read only.</div><a href="'+b.files+'" target="_blank" rel="noopener">Open in Dropbox</a></div>':'');
+ bindGo();document.getElementById('drill').classList.add('show')}
+function showTag(k){const L=tagged(k);document.getElementById('dname').textContent=k==='u'?'Urgent':k==='i'?'Important':'COMPLETED';
+ document.getElementById('areas').innerHTML=L.length?L.map(x=>card(x.t,x.b.n)).join(''):(k==='c'?'<div class="area"><div class="an">The completed task</div><div class="de">The new measure: work finished, not work started. Counting starts once the Abacus ranks tasks.</div></div>':'<div class="area"><div class="an">Nothing set yet</div><div class="de">The rule for what goes here comes later.</div></div>');
+ bindGo();document.getElementById('drill').classList.add('show')}
+function showX(x){if(x==='Ask DK'){location.href='ask-dk.html';return}
+ if(x==='Emails'){location.href='emails.html';return}
+ document.getElementById('dname').textContent=x;
+ document.getElementById('areas').innerHTML='<div class="area"><div class="an">Not set up yet</div><div class="de">Daryl to say what goes here.</div></div>';
+ document.getElementById('drill').classList.add('show')}
+document.getElementById('bBack').onclick=()=>document.getElementById('drill').classList.remove('show');
+function z(v){zoom=Math.max(.8,Math.min(1.25,v));document.getElementById('grid').style.transform='scale('+zoom+')'}
+document.getElementById('bIn').onclick=()=>z(zoom*1.08);document.getElementById('bOut').onclick=()=>z(zoom/1.08);document.getElementById('bFit').onclick=()=>z(1);
+document.getElementById('bReset').onclick=()=>{sel=3;z(1);document.getElementById('drill').classList.remove('show');draw()};
+draw();
+</script>
+</body>
+</html>

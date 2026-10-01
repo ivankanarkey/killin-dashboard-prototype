@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Emails</title>
+<style>
+:root{color-scheme:dark;--bg:#020a14;--glow:#0a2744;--pan:#061a33;--pan-lt:#0b2d52;--blue:#1e88e5;--hd:#5fb3ff;--ink:#fff;--muted:#bcd4f0;--back:#ffe600;--pur:#d400ff;--wht:#ffffff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
+body{min-height:100vh;background:radial-gradient(ellipse 90% 60% at 50% 0%,var(--glow),var(--bg) 70%) fixed;padding:16px 16px calc(32px + env(safe-area-inset-bottom))}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.wrap{max-width:1100px;margin:0 auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+h1{font-size:28px;font-weight:900;color:var(--hd);text-shadow:0 0 12px rgba(30,136,229,.9);line-height:1.15}
+.back{min-height:48px;min-width:48px;padding:0 22px;border-radius:12px;background:var(--back);color:#000;font-weight:900;font-size:18px;border:3px solid #fff59d;box-shadow:0 0 10px var(--back),0 0 22px var(--back);flex:none}
+/* column tabs: phone portrait only */
+.tabs{display:none;gap:8px;margin-bottom:12px}
+.tab{flex:1;min-height:48px;border-radius:12px;background:var(--pan);border:2px solid var(--blue);color:var(--hd);font-weight:800;font-size:16px;line-height:1.2;padding:4px 6px}
+.tab.on{background:var(--pan-lt);color:var(--ink);border-color:#90caff;box-shadow:0 0 12px rgba(30,136,229,.8)}
+/* board */
+.board{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start}
+.col{background:linear-gradient(180deg,#0b2d52,#061a33);border:3px solid var(--blue);border-radius:16px;box-shadow:0 0 16px rgba(30,136,229,.45);padding:12px}
+.colh{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.colh .lamp{font-size:18px;font-weight:900;color:#000;padding:6px 12px;border-radius:10px;line-height:1.2}
+.colh .lamp small{display:block;font-size:15px;font-weight:800}
+.colh .n{font-size:16px;color:var(--muted);font-weight:700;white-space:nowrap}
+.lamp.act{background:var(--pur);box-shadow:0 0 10px var(--pur),0 0 22px var(--pur)}
+.lamp.imp{background:var(--wht);box-shadow:0 0 10px #fff,0 0 20px #ffffffaa}
+.card{background:var(--pan);border:2px solid var(--blue);border-left:8px solid var(--c);border-radius:12px;padding:12px;margin-bottom:10px}
+.card .sub{font-size:17px;font-weight:800;line-height:1.3}
+.card .sum{font-size:17px;line-height:1.4;color:#e8eeec;margin-top:6px}
+.card .meta{font-size:15px;color:var(--muted);margin-top:6px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:15px;font-weight:800;padding:3px 9px;border-radius:8px;line-height:1.3}
+.tag.co{color:#000}
+.tag.topic{background:#3a4650;color:#e6ecf2}
+.empty{font-size:16px;color:var(--muted);padding:8px 2px}
+footer{margin-top:22px;font-size:14px;color:var(--muted);line-height:1.45}
+@media (max-width:760px) and (orientation:portrait){
+ .tabs{display:flex}
+ .board{display:block}
+ .col{display:none}
+ .col.on{display:block}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Emails</h1><button class="back" onclick="location.href='dashboard-prototype.html'">Back</button></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="board" id="board"></div>
+</div>
+
+<script>
+// Company label colours: proposed in 2026-10-01-email-triage-colour-decisions.html
+const CO={KM:'#B08A00',TFT:'#3A8EE6',NCCS:'#8E562E',SylvaNaut:'#6B7A2A'};
+const COLS=[
+ {k:'act',name:'Action needed',sub:'Reply now',color:'#d400ff'},
+ {k:'imp',name:'Important',sub:'Keep an eye',color:'#ffffff'}
+];
+// Daryl's unread inbox, 24 Sep – 1 Oct 2026 (2026-10-01-unread-email-last-7-days.md). Times AEST.
+const MAIL=[
+ {col:'act',from:'Gold Bullion Australia',sub:'Payment reminder - Sales Order SO04001402',at:'Mon 28 Sep 15:40',co:'KM',topics:['financial'],
+  sum:'$785.32 due 23 Feb, still unpaid. Pay or confirm paid.'},
+ {col:'act',from:'DCCEEW - COP31',sub:'Pre-COP and COP31 External Stakeholder Briefing',at:'Thu 24 Sep 17:18',co:'NCCS',topics:['notification'],
+  sum:'COP31 online briefing, 30 Sep. Date has passed.'},
+ {col:'imp',from:'Kevin Harding, Hulton King, David Simms',sub:'Review of AEC Supply/Demand Assessment',at:'Wed 30 Sep 11:58',thread:3,co:'KM',topics:[],
+  sum:"Committee feedback on AEC timber report. CC'd only."},
+ {col:'imp',from:'Forestry Australia',sub:'Re: RSVP / Future Foresters Function / 6 October',at:'Mon 28 Sep 18:52',co:'KM',topics:[],
+  sum:'6 Oct function is for young foresters only.'},
+ {col:'imp',from:'ACCU Scheme',sub:'Development of the IFLM method: September 2026 workshop update',at:'Fri 25 Sep 16:04',co:'NCCS',topics:['notification','compliance-admin'],
+  sum:'IFLM carbon method update. Draft due end of 2026.'},
+ {col:'imp',from:'Richard Stevens, Duncan Scott-Lawson',sub:'ABMA: Anhui Delegation Presentation 23-09-26',at:'Thu 24 Sep 15:28',thread:2,co:'TFT',topics:[],
+  sum:"Anhui delegation invited ABMA to visit. CC'd only."}
+];
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let tab=0;
+function draw(){
+ document.getElementById('tabs').innerHTML=COLS.map((c,i)=>'<button class="tab'+(i===tab?' on':'')+'" data-t="'+i+'">'+c.name+' · '+Math.min(5,MAIL.filter(m=>m.col===c.k).length)+'</button>').join('');
+ document.getElementById('board').innerHTML=COLS.map((c,i)=>{const L=MAIL.filter(m=>m.col===c.k).slice(0,5);
+  return '<div class="col'+(i===tab?' on':'')+'"><div class="colh"><span class="lamp '+c.k+'">'+c.name+'<small>'+c.sub+'</small></span><span class="n">'+L.length+(L.length===1?' email':' emails')+'</span></div>'+
+   (L.length?L.map(m=>'<div class="card" style="--c:'+c.color+'"><div class="sub">'+esc(m.sub)+'</div><div class="sum">'+esc(m.sum)+'</div><div class="meta">'+esc(m.from)+' · '+m.at+(m.thread?' · '+m.thread+' emails':'')+'</div><div class="tags"><span class="tag co" style="background:'+CO[m.co]+';color:'+(m.co==='NCCS'||m.co==='SylvaNaut'?'#fff':'#000')+'">'+m.co+'</span>'+m.topics.map(t=>'<span class="tag topic">'+esc(t)+'</span>').join('')+'</div></div>').join(''):'<div class="empty">Nothing here.</div>')+'</div>'}).join('');
+ document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=+b.dataset.t;draw()});
+}
+draw();
+</script>
+</body>
+</html>
